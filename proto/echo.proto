@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+// Synthetic proto used to bootstrap and exercise gflow before the real
+// Launcher service.proto is swapped in. It is intentionally small but is
+// designed to cover every cell of the Bridge field-handling matrix (DESIGN.md
+// §8.2): singular scalar, singular message, enum, bytes, int64, repeated
+// scalar, repeated message, map, and oneof. It also exposes one unary RPC and
+// one server-streaming RPC so both transport paths (§8.4 / §8.5) are tested.
+package gflow.demo;
+
+// Enum -> Lua string (the value name).
+enum Color {
+  COLOR_UNSPECIFIED = 0;
+  RED = 1;
+  GREEN = 2;
+  BLUE = 3;
+}
+
+// Nested singular message, to test recursion in both directions.
+message Point {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message EchoRequest {
+  // singular scalars
+  string message = 1;
+  bool loud = 2;
+  int32 count = 3;
+  int64 big = 4;        // 64-bit precision case (§8.2)
+  double ratio = 5;
+  bytes blob = 6;       // bytes <-> Lua string verbatim
+
+  // singular enum + singular message
+  Color color = 7;
+  Point origin = 8;
+
+  // repeated scalar + repeated message
+  repeated string tags = 9;
+  repeated Point path = 10;
+
+  // map<K,V>
+  map<string, int32> counters = 11;
+
+  // oneof: only the set field is present
+  oneof payload {
+    string text_payload = 12;
+    int32 number_payload = 13;
+  }
+}
+
+message EchoResponse {
+  // Echoes the request back plus some derived fields, so scripts can assert.
+  string message = 1;
+  int32 length = 2;     // server-computed: length of message
+  Color color = 3;
+}
+
+message TickRequest {
+  int32 ticks = 1;      // how many stream messages the server should emit
+  int32 interval_ms = 2;
+}
+
+message Tick {
+  int32 seq = 1;        // 0-based tick index
+  string label = 2;
+}
+
+service EchoService {
+  // Unary path (§8.4 spike target).
+  rpc Echo(EchoRequest) returns (EchoResponse);
+
+  // Server-streaming path (§8.5): emits `ticks` Tick messages then closes.
+  rpc Subscribe(TickRequest) returns (stream Tick);
+}
