@@ -1,13 +1,5 @@
 syntax = "proto3";
 
-// Synthetic proto used to bootstrap and exercise gflow before the real
-// Launcher service.proto is swapped in. It is intentionally small but is
-// designed to cover every cell of the Bridge field-handling matrix (DESIGN.md
-// §8.2): singular scalar, singular message, enum, bytes, int64, repeated
-// scalar, repeated message, map, and oneof. It also exposes one unary RPC and
-// one server-streaming RPC so both transport paths (§8.4 / §8.5) are tested.
-package gflow.demo;
-
 // Enum -> Lua string (the value name).
 enum Color {
   COLOR_UNSPECIFIED = 0;
@@ -67,9 +59,7 @@ message Tick {
 }
 
 service EchoService {
-  // Unary path (§8.4 spike target).
   rpc Echo(EchoRequest) returns (EchoResponse);
 
-  // Server-streaming path (§8.5): emits `ticks` Tick messages then closes.
   rpc Subscribe(TickRequest) returns (stream Tick);
 }
