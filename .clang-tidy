@@ -1,11 +1,3 @@
-# gflow clang-tidy configuration.
-#
-# Philosophy: broad modern-C++ hygiene (bugprone / modernize / performance /
-# readability / core-guidelines), with the checks that fight a gRPC + protobuf
-# reflection codebase (or are pure noise) disabled. HeaderFilterRegex restricts
-# diagnostics to our own headers under src/ — vendored protobuf/grpc/sol2/lua
-# and FetchContent build trees are never linted.
-
 Checks: >
   -*,
   bugprone-*,
@@ -28,7 +20,8 @@ Checks: >
   -misc-non-private-member-variables-in-classes,
   -misc-include-cleaner,
   -misc-no-recursion,
-  -clang-diagnostic-unused-command-line-argument
+  -clang-diagnostic-unused-command-line-argument,
+  -portability-avoid-pragma-once
 
 # Lint only our own headers, not vendored/generated ones.
 HeaderFilterRegex: 'src/.*'

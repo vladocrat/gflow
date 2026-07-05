@@ -20,7 +20,7 @@ protected:
         m_server = std::make_unique<gflow::demo::EchoServer>("localhost:0");
         ASSERT_NE(m_server->port(), 0) << "echo server failed to bind";
 
-        m_client = std::make_unique<gflow::GRPCClient>("localhost:" + std::to_string(m_server->port()));
+        m_client = std::make_unique<gflow::GRPCClient>("localhost", m_server->port());
 
         m_sourceTree.MapPath("", GFLOW_PROTO_DIR);
         m_importer = std::make_unique<google::protobuf::compiler::Importer>(&m_sourceTree, nullptr);
@@ -33,9 +33,9 @@ protected:
         return m_file->FindServiceByName("EchoService")->FindMethodByName("Echo");
     }
 
-    google::protobuf::DynamicMessageFactory m_factory;
     google::protobuf::compiler::DiskSourceTree m_sourceTree;
     std::unique_ptr<google::protobuf::compiler::Importer> m_importer;
+    google::protobuf::DynamicMessageFactory m_factory;
     const google::protobuf::FileDescriptor* m_file = nullptr;
     std::unique_ptr<gflow::demo::EchoServer> m_server;
     std::unique_ptr<gflow::GRPCClient> m_client;

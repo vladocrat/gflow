@@ -1,5 +1,8 @@
 #include "EchoServer.hpp"
 
+#include <chrono>
+#include <thread>
+
 #include <grpcpp/grpcpp.h>
 
 #include "echo.grpc.pb.h"
@@ -17,9 +20,27 @@ public:
         return grpc::Status::OK;
     }
 
-    grpc::Status Subscribe(grpc::ServerContext* /*context*/, const TickRequest* /*request*/,
-                           grpc::ServerWriter<Tick>* /*writer*/) override
+    grpc::Status Subscribe(grpc::ServerContext* context, const TickRequest* request,
+                           grpc::ServerWriter<Tick>* writer) override
     {
+        for (int i = 0; i < request->ticks(); ++i) {
+            if (context->IsCancelled()) {
+                break;
+            }
+
+            Tick tick;
+            tick.set_seq(i);
+            tick.set_label("tick-" + std::to_string(i));
+
+            if (!writer->Write(tick)) {
+                break;
+            }
+
+            if (request->interval_ms() > 0) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(request->interval_ms()));
+            }
+        }
+
         return grpc::Status::OK;
     }
 };

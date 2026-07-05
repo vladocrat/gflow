@@ -29,11 +29,16 @@ include(deps/lua)
 include(deps/sol2)
 include(deps/spdlog)
 include(deps/cli11)
+include(deps/utilscpp)
 
 add_subdirectory(src/gflow-sdk)
 
 add_executable(gflow
   src/gflow/main.cpp
+  src/gflow/Bridge.hpp
+  src/gflow/Bridge.cpp
+  src/gflow/Registrar.hpp
+  src/gflow/Registrar.cpp
 )
 
 target_link_libraries(gflow PRIVATE
