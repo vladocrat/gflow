@@ -22,7 +22,7 @@ public:
         text = std::format("[{} {}:{}]: {} ", filename, line, column, message);
     }
 
-    bool hasErrors()
+    bool hasErrors() const noexcept
     {
         return !text.empty();
     }

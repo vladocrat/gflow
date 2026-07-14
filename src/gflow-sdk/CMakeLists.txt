@@ -1,5 +1,6 @@
 add_library(gflow-sdk STATIC
   GRPCClient.hpp GRPCClient.cpp
+  ServerStream.hpp ServerStream.cpp
   ProtoModel.hpp ProtoModel.cpp
   Utils.hpp Utils.cpp
   LuaTypeGenerator.hpp LuaTypeGenerator.cpp

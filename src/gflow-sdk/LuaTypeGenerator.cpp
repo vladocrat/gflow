@@ -15,6 +15,8 @@ namespace gflow
 namespace
 {
 
+// NOLINTBEGIN
+
 struct File
 {
     File& meta(const std::string_view name)
@@ -89,6 +91,8 @@ struct File
 private:
     std::string_view currentService;
 };
+
+// NOLINTEND
 
 } // namespace
 

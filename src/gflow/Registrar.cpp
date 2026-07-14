@@ -13,6 +13,7 @@
 #include "gflow-sdk/Bridge.hpp"
 #include "gflow-sdk/GRPCClient.hpp"
 #include "gflow-sdk/ProtoModel.hpp"
+#include "gflow-sdk/ServerStream.hpp"
 
 namespace gflow
 {
