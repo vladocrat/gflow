@@ -7,6 +7,7 @@
       "displayName": "Windows MSVC Debug (Ninja)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "GFLOW_WARNINGS_AS_ERRORS": "ON"
@@ -15,10 +16,11 @@
     },
     {
       "name": "vs2022",
-      "displayName": "Windows MSVC Debug (Visual Studio; no dev prompt needed)",
+      "displayName": "Windows MSVC Debug",
       "generator": "Visual Studio 17 2022",
       "architecture": "x64",
       "binaryDir": "${sourceDir}/build-vs",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
         "GFLOW_WARNINGS_AS_ERRORS": "ON"
       },

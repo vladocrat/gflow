@@ -5,17 +5,19 @@ runtime via protobuf reflection (no codegen), exposes every message as a Lua
 constructor and every RPC as a Lua function, and runs your scripts against a
 live server. See [DESIGN.md](DESIGN.md) for the full design.
 
-## Status
-
-Early setup. The build, dependency, and CI scaffolding are in place; the engine
-(loader, bridge, dispatcher, streaming, type emitter) is being built per the
-milestones in `DESIGN.md`.
-
 ## Building
 
-Requirements: Windows, Visual Studio 2022 (MSVC), CMake ≥ 3.25, Ninja. The
-native dependencies (gRPC, protobuf, Lua) are committed prebuilt under
-`third_party/`, so no dependency compilation is needed.
+Requirements: Windows, Visual Studio 2022 (MSVC), CMake ≥ 3.25, Ninja, and
+[vcpkg](https://github.com/microsoft/vcpkg). Set the `VCPKG_ROOT` environment
+variable to your vcpkg checkout — the presets reference it to locate the
+toolchain.
+
+The heavy native dependencies (gRPC, protobuf, Lua) are managed by vcpkg in
+[manifest mode](https://learn.microsoft.com/en-us/vcpkg/consume/manifest-mode)
+(see `vcpkg.json`). They are fetched and built automatically on the first CMake
+configure and cached afterward — there is no manual dependency step. (The first
+configure builds gRPC and its dependencies from source and can take several
+minutes.)
 
 ```
 cmake --preset vs2022
@@ -48,5 +50,5 @@ gflow is also available under a separate **commercial license** for use without
 the AGPL's copyleft obligations (e.g. embedding in proprietary software or a
 closed network service). Contact **Vladislav Milovanov &lt;vladocrat@gmail.com&gt;**.
 
-Third-party components bundled under `third_party/` keep their own licenses; see
+Third-party components that gflow links keep their own licenses; see
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
