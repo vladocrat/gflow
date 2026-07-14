@@ -26,8 +26,11 @@ struct GenerateOptions
 
 struct RunOptions
 {
+    std::filesystem::path protoFile;
+    std::vector<std::filesystem::path> importPaths;
     std::string address {"127.0.0.1"};
     std::uint16_t port {50051};
+    std::vector<std::filesystem::path> scripts;
 };
 
 class CliParser final

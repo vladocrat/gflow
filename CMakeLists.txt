@@ -104,6 +104,33 @@ if(GFLOW_BUILD_TESTS)
       target_compile_definitions(gflow_tests PRIVATE GFLOW_PROTO_DIR="${CMAKE_CURRENT_SOURCE_DIR}/proto")
     endif()
 
+    # CliParser + Application: compile the app sources into the test target so
+    # CliParser::parse and Application::run can be exercised directly.
+    if(TARGET CLI11::CLI11 AND TARGET sol2::sol2 AND TARGET lua::lua
+        AND TARGET spdlog::spdlog AND TARGET echo-service AND TARGET gflow-sdk)
+      target_sources(gflow_tests PRIVATE
+        tests/cli_parser_test.cpp
+        tests/application_run_test.cpp
+        src/gflow/CliParser.cpp
+        src/gflow/Application.cpp
+        src/gflow/Registrar.cpp
+      )
+      target_link_libraries(gflow_tests PRIVATE
+        protobuf::libprotobuf
+        gRPC::grpc++
+        CLI11::CLI11
+        sol2::sol2
+        lua::lua
+        spdlog::spdlog
+        gflow-sdk
+        echo-service
+      )
+      target_compile_definitions(gflow_tests PRIVATE
+        GFLOW_PROTO_DIR="${CMAKE_CURRENT_SOURCE_DIR}/proto"
+        GFLOW_LUA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/lua"
+      )
+    endif()
+
     gflow_set_warnings(gflow_tests)
     gflow_enable_clang_tidy(gflow_tests)
 
