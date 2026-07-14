@@ -35,6 +35,10 @@ add_subdirectory(src/gflow-sdk)
 
 add_executable(gflow
   src/gflow/main.cpp
+  src/gflow/Application.hpp
+  src/gflow/Application.cpp
+  src/gflow/CliParser.hpp
+  src/gflow/CliParser.cpp
   src/gflow/Registrar.hpp
   src/gflow/Registrar.cpp
 )

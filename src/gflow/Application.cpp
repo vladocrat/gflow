@@ -1,0 +1,77 @@
+#include "Application.hpp"
+
+#include <spdlog/spdlog.h>
+
+#include "gflow-sdk/LuaTypeGenerator.hpp"
+#include "gflow-sdk/ProtoModel.hpp"
+
+#include "CliParser.hpp"
+
+namespace gflow
+{
+
+struct Application::impl_t
+{
+    CliParser parser;
+    gflow::LuaTypeGenerator gen;
+
+    int runGenerate(const GenerateOptions& opts)
+    {
+        gflow::ProtoModel model;
+        std::string error;
+
+        if (!model.load(opts.protoFile, opts.importPaths, &error)) {
+            spdlog::error("gflow: {}", error);
+            return 1;
+        }
+
+        gen.render(model, opts.outputDir);
+        return 0;
+    }
+};
+
+Application::Application()
+{
+    createImpl();
+}
+
+Application::~Application() = default;
+
+int Application::run(int argc, char** argv)
+{
+    const int rc = impl().parser.parse(argc, argv);
+
+    if (rc != 0) {
+        spdlog::error("Failed to parse parameters. Parser exited with: {}", rc);
+        return rc;
+    }
+
+    switch (impl().parser.selected()) {
+        case Command::Generate:
+            return impl().runGenerate(impl().parser.generateOptions());
+        case Command::Run:
+            // gflow::GRPCClient client(host, port);
+            //
+            // sol::state lua;
+            // lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::table, sol::lib::math, sol::lib::os, sol::lib::package);
+            //
+            // gflow::registerBindings(lua, model, client);
+            //
+            // for (const auto& script : scripts) {
+            //     const sol::protected_function_result result = lua.safe_script_file(script, sol::script_pass_on_error);
+            //     if (!result.valid()) {
+            //         const sol::error err = result;
+            //         spdlog::error("gflow: {}: {}", script, err.what());
+            //         return 1;
+            //     }
+            // }
+            return 0;
+        case Command::None:
+            // Unreachable: require_subcommand(1) enforces a selection.
+            return 0;
+    }
+
+    return 0;
+}
+
+} // namespace gflow
