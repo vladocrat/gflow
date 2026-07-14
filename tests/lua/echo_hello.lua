@@ -1,4 +1,6 @@
-local resp = EchoService.Echo(EchoRequest {
+local echo = require("echo")
+
+local resp = echo.EchoService.Echo(echo.EchoRequest {
     message = "hello from lua",
     count = 3,
     loud = true,

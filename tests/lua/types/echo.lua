@@ -1,6 +1,4 @@
----@meta
-
----@alias Color "COLOR_UNSPECIFIED"|"RED"|"GREEN"|"BLUE"
+---@meta echo
 
 ---@class (exact) Point
 ---@field x? integer
@@ -34,34 +32,44 @@
 ---@field seq? integer
 ---@field label? string
 
+local M = {}
+
 ---@param fields Point
 ---@return Point
-function Point(fields) end
+function M.Point(fields) end
 
 ---@param fields EchoRequest
 ---@return EchoRequest
-function EchoRequest(fields) end
+function M.EchoRequest(fields) end
 
 ---@param fields EchoResponse
 ---@return EchoResponse
-function EchoResponse(fields) end
+function M.EchoResponse(fields) end
 
 ---@param fields TickRequest
 ---@return TickRequest
-function TickRequest(fields) end
+function M.TickRequest(fields) end
 
 ---@param fields Tick
 ---@return Tick
-function Tick(fields) end
+function M.Tick(fields) end
 
-local EchoService = {}
+---@enum Color
+M.Color = {
+    COLOR_UNSPECIFIED = "COLOR_UNSPECIFIED",
+    RED = "RED",
+    GREEN = "GREEN",
+    BLUE = "BLUE",
+}
+
+M.EchoService = {}
 
 ---@param req EchoRequest
 ---@return EchoResponse
-function EchoService.Echo(req) end
+function M.EchoService.Echo(req) end
 
 ---@param req TickRequest
----@return fun():Tick
-function EchoService.Subscribe(req) end
+---@return Tick
+function M.EchoService.Subscribe(req) end
 
-return EchoService
+return M

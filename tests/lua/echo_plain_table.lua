@@ -1,4 +1,6 @@
-local resp = EchoService.Echo({ message = "plain", color = "BLUE" })
+local echo = require("echo")
+
+local resp = echo.EchoService.Echo({ message = "plain", color = "BLUE" })
 
 assert(resp.message == "plain", "message mismatch")
 assert(resp.length == 5, "length mismatch")

@@ -10,7 +10,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include "Bridge.hpp"
+#include "gflow-sdk/Bridge.hpp"
 #include "gflow-sdk/GRPCClient.hpp"
 #include "gflow-sdk/ProtoModel.hpp"
 
@@ -20,10 +20,22 @@ namespace gflow
 namespace
 {
 
-void registerMessages(sol::state& lua, ProtoModel& model)
+void registerMessages(sol::table& module, ProtoModel& model)
 {
     for (const auto* descriptor : model.messages()) {
-        lua[std::string(descriptor->name())] = [](sol::table fields) { return fields; };
+        module[std::string(descriptor->name())] = [](sol::table fields) { return fields; };
+    }
+}
+
+void registerEnums(sol::table& module, sol::state& lua, ProtoModel& model)
+{
+    for (const auto* descriptor : model.enums()) {
+        auto values = lua.create_table();
+        for (int i = 0; i < descriptor->value_count(); ++i) {
+            const std::string name(descriptor->value(i)->name());
+            values[name] = name;
+        }
+        module[std::string(descriptor->name())] = values;
     }
 }
 
@@ -93,10 +105,10 @@ sol::table registerServiceMethods(sol::state& lua, ProtoModel& model, const goog
     return serviceTable;
 }
 
-void registerServices(sol::state& lua, ProtoModel& model, GRPCClient& client)
+void registerServices(sol::table& module, sol::state& lua, ProtoModel& model, GRPCClient& client)
 {
     for (const auto* service : model.services()) {
-        lua[std::string(service->name())] = registerServiceMethods(lua, model, service, client);
+        module[std::string(service->name())] = registerServiceMethods(lua, model, service, client);
     }
 }
 
@@ -104,8 +116,13 @@ void registerServices(sol::state& lua, ProtoModel& model, GRPCClient& client)
 
 void registerBindings(sol::state& lua, ProtoModel& model, GRPCClient& client)
 {
-    registerMessages(lua, model);
-    registerServices(lua, model, client);
+    auto module = lua.create_table();
+
+    registerMessages(module, model);
+    registerEnums(module, lua, model);
+    registerServices(module, lua, model, client);
+
+    lua["package"]["loaded"][model.name()] = module;
 }
 
 } // namespace gflow

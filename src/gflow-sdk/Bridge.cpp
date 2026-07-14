@@ -1,6 +1,7 @@
 #include "Bridge.hpp"
 
 #include <cstdint>
+#include <format>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -23,6 +24,29 @@ std::string toStd(absl::string_view value)
     return std::string(value.data(), value.size());
 }
 
+std::string luaScalarType(const FieldDescriptor* field)
+{
+    switch (field->cpp_type()) {
+    case FieldDescriptor::CPPTYPE_INT32:
+    case FieldDescriptor::CPPTYPE_INT64:
+    case FieldDescriptor::CPPTYPE_UINT32:
+    case FieldDescriptor::CPPTYPE_UINT64:
+        return "integer";
+    case FieldDescriptor::CPPTYPE_FLOAT:
+    case FieldDescriptor::CPPTYPE_DOUBLE:
+        return "number";
+    case FieldDescriptor::CPPTYPE_BOOL:
+        return "boolean";
+    case FieldDescriptor::CPPTYPE_STRING:
+        return "string";
+    case FieldDescriptor::CPPTYPE_ENUM:
+        return toStd(field->enum_type()->name());
+    case FieldDescriptor::CPPTYPE_MESSAGE:
+        return toStd(field->message_type()->name());
+    }
+    return "any";
+}
+
 [[noreturn]] void fail(const std::string& path, const std::string& message)
 {
     throw std::runtime_error(path.empty() ? message : path + ": " + message);
@@ -33,7 +57,7 @@ std::string child(const std::string& path, const std::string& key)
     return path.empty() ? key : path + '.' + key;
 }
 
-std::string luaTypeName(const sol::object& value)
+std::string luaValueTypeName(const sol::object& value)
 {
     switch (value.get_type()) {
     case sol::type::nil:
@@ -54,7 +78,7 @@ std::string luaTypeName(const sol::object& value)
 int64_t expectInt(const sol::object& value, const std::string& path)
 {
     if (value.get_type() != sol::type::number) {
-        fail(path, "expected number, got " + luaTypeName(value));
+        fail(path, "expected number, got " + luaValueTypeName(value));
     }
     return value.as<int64_t>();
 }
@@ -62,7 +86,7 @@ int64_t expectInt(const sol::object& value, const std::string& path)
 double expectNumber(const sol::object& value, const std::string& path)
 {
     if (value.get_type() != sol::type::number) {
-        fail(path, "expected number, got " + luaTypeName(value));
+        fail(path, "expected number, got " + luaValueTypeName(value));
     }
     return value.as<double>();
 }
@@ -70,7 +94,7 @@ double expectNumber(const sol::object& value, const std::string& path)
 bool expectBool(const sol::object& value, const std::string& path)
 {
     if (value.get_type() != sol::type::boolean) {
-        fail(path, "expected boolean, got " + luaTypeName(value));
+        fail(path, "expected boolean, got " + luaValueTypeName(value));
     }
     return value.as<bool>();
 }
@@ -78,7 +102,7 @@ bool expectBool(const sol::object& value, const std::string& path)
 std::string expectString(const sol::object& value, const std::string& path)
 {
     if (value.get_type() != sol::type::string) {
-        fail(path, "expected string, got " + luaTypeName(value));
+        fail(path, "expected string, got " + luaValueTypeName(value));
     }
     return value.as<std::string>();
 }
@@ -86,7 +110,7 @@ std::string expectString(const sol::object& value, const std::string& path)
 sol::table expectTable(const sol::object& value, const std::string& path, const std::string& forWhat)
 {
     if (value.get_type() != sol::type::table) {
-        fail(path, "expected table for " + forWhat + ", got " + luaTypeName(value));
+        fail(path, "expected table for " + forWhat + ", got " + luaValueTypeName(value));
     }
     return value.as<sol::table>();
 }
@@ -340,6 +364,22 @@ void luaTableToMessage(const sol::table& table, google::protobuf::Message* messa
 sol::table messageToLuaTable(const google::protobuf::Message& message, sol::state_view lua)
 {
     return messageToTable(message, lua);
+}
+
+std::string luaTypeName(const google::protobuf::FieldDescriptor* field)
+{
+    if (field->is_map()) {
+        return std::format(
+            "table<{}, {}>", luaScalarType(field->message_type()->map_key()),
+            luaScalarType(field->message_type()->map_value())
+        );
+    }
+
+    if (field->is_repeated()) {
+        return std::format("{}[]", luaScalarType(field));
+    }
+
+    return luaScalarType(field);
 }
 
 } // namespace gflow

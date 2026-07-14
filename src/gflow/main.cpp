@@ -9,6 +9,7 @@
 
 #include "gflow-sdk/GRPCClient.hpp"
 #include "gflow-sdk/ProtoModel.hpp"
+#include "gflow-sdk/LuaTypeGenerator.hpp"
 
 #include "Registrar.hpp"
 
@@ -37,6 +38,9 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    gflow::LuaTypeGenerator gen;
+    gen.render(model, R"(C:\cpp_projects\gflow\tests\lua\types)");
+
     const auto colon = address.rfind(':');
     if (colon == std::string::npos) {
         spdlog::error("gflow: --addr must be host:port");
@@ -48,7 +52,7 @@ int main(int argc, char** argv)
     gflow::GRPCClient client(host, port);
 
     sol::state lua;
-    lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::table, sol::lib::math, sol::lib::os);
+    lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::table, sol::lib::math, sol::lib::os, sol::lib::package);
 
     gflow::registerBindings(lua, model, client);
 

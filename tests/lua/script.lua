@@ -1,6 +1,6 @@
-local EchoService = require("echo")
+local echo = require("echo")
 
-local req = EchoRequest {
+local req = echo.EchoRequest {
     message = "hello",
     count = 3,
     loud = true,
@@ -13,9 +13,9 @@ local req = EchoRequest {
     text_payload = "set",
 }
 
-local resp = EchoService.Echo(req)
+local resp = echo.EchoService.Echo(req)
 print(resp.message, resp.length, resp.color)
 
-for tick in EchoService.Subscribe(TickRequest { ticks = 5, interval_ms = 100 }) do
+for tick in echo.EchoService.Subscribe(echo.TickRequest { ticks = 5, interval_ms = 100 }) do
     print(tick.seq, tick.label)
 end

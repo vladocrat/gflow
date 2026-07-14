@@ -35,8 +35,6 @@ add_subdirectory(src/gflow-sdk)
 
 add_executable(gflow
   src/gflow/main.cpp
-  src/gflow/Bridge.hpp
-  src/gflow/Bridge.cpp
   src/gflow/Registrar.hpp
   src/gflow/Registrar.cpp
 )
@@ -93,6 +91,12 @@ if(GFLOW_BUILD_TESTS)
     if(TARGET echo-service AND TARGET gflow-sdk)
       target_sources(gflow_tests PRIVATE tests/echo_integration_test.cpp)
       target_link_libraries(gflow_tests PRIVATE echo-service gflow-sdk)
+      target_compile_definitions(gflow_tests PRIVATE GFLOW_PROTO_DIR="${CMAKE_CURRENT_SOURCE_DIR}/proto")
+    endif()
+
+    if(TARGET gflow-sdk)
+      target_sources(gflow_tests PRIVATE tests/lua_type_generator_test.cpp)
+      target_link_libraries(gflow_tests PRIVATE gflow-sdk)
       target_compile_definitions(gflow_tests PRIVATE GFLOW_PROTO_DIR="${CMAKE_CURRENT_SOURCE_DIR}/proto")
     endif()
 

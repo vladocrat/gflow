@@ -78,6 +78,18 @@ bool ProtoModel::load(
     return false;
 }
 
+std::string ProtoModel::name() const
+{
+    return std::filesystem::path(std::string(_impl->file->name())).stem().string();
+}
+
+std::vector<const google::protobuf::EnumDescriptor*> ProtoModel::enums() const
+{
+    return std::views::iota(0, _impl->file->enum_type_count()) | std::views::transform([this](int i) {
+        return _impl->file->enum_type(i);
+    }) | to<std::vector<const google::protobuf::EnumDescriptor*>>();
+}
+
 std::vector<const google::protobuf::Descriptor*> ProtoModel::messages() const
 {
     return std::views::iota(0, _impl->file->message_type_count()) | std::views::transform([this](int i) {

@@ -12,6 +12,7 @@ namespace google::protobuf
 class Descriptor;
 class ServiceDescriptor;
 class Message;
+class EnumDescriptor;
 } // namespace google::protobuf
 
 namespace gflow
@@ -33,6 +34,9 @@ public:
         std::string* error = nullptr
     );
 
+    std::string name() const;
+
+    std::vector<const google::protobuf::EnumDescriptor*> enums() const;
     std::vector<const google::protobuf::Descriptor*> messages() const;
     std::vector<const google::protobuf::ServiceDescriptor*> services() const;
 
