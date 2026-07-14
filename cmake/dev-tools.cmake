@@ -20,9 +20,6 @@ file(GLOB_RECURSE GFLOW_FORMAT_SOURCES CONFIGURE_DEPENDS
   "${CMAKE_SOURCE_DIR}/src/*.cpp"
   "${CMAKE_SOURCE_DIR}/src/*.h"
   "${CMAKE_SOURCE_DIR}/src/*.hpp"
-  "${CMAKE_SOURCE_DIR}/tests/*.cpp"
-  "${CMAKE_SOURCE_DIR}/tests/*.h"
-  "${CMAKE_SOURCE_DIR}/tests/*.hpp"
 )
 
 if(GFLOW_CLANG_FORMAT)

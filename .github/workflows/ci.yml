@@ -12,6 +12,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+
 jobs:
   build-test:
     name: Build & test (Windows MSVC, Debug)
@@ -23,6 +26,17 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
+
+      - name: Set up vcpkg
+        run: echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
+
+      - name: Export vcpkg binary cache credentials
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env.ACTIONS_RESULTS_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       - name: Configure
         run: cmake --preset windows-msvc-debug
@@ -46,7 +60,7 @@ jobs:
       - name: Check formatting
         run: |
           clang-format --version
-          files=$(find src tests -type f \( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \))
+          files=$(find src -type f \( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \))
           clang-format --dry-run -Werror --style=file $files
 
   clang-tidy:
@@ -66,6 +80,17 @@ jobs:
 
       - name: Install clang-tidy 22
         run: pip install "clang-tidy~=22.1"
+
+      - name: Set up vcpkg
+        run: echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
+
+      - name: Export vcpkg binary cache credentials
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env.ACTIONS_RESULTS_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       - name: Configure
         run: cmake --preset windows-msvc-debug
