@@ -24,7 +24,9 @@ namespace
 void registerMessages(sol::table& module, ProtoModel& model)
 {
     for (const auto* descriptor : model.messages()) {
-        module[std::string(descriptor->name())] = [](sol::table fields) { return fields; };
+        module[std::string(descriptor->name())] = [](sol::table fields) {
+            return fields;
+        };
     }
 }
 
@@ -40,7 +42,9 @@ void registerEnums(sol::table& module, sol::state& lua, ProtoModel& model)
     }
 }
 
-sol::table registerServiceMethods(sol::state& lua, ProtoModel& model, const google::protobuf::ServiceDescriptor* const service, GRPCClient& client)
+sol::table registerServiceMethods(
+    sol::state& lua, ProtoModel& model, const google::protobuf::ServiceDescriptor* const service, GRPCClient& client
+)
 {
     auto serviceTable = lua.create_table();
 
@@ -53,7 +57,8 @@ sol::table registerServiceMethods(sol::state& lua, ProtoModel& model, const goog
         }
 
         if (method->server_streaming()) {
-            serviceTable[methodName] = [method, &model, &client](sol::this_state state, const sol::table& request) -> sol::object {
+            serviceTable[methodName] =
+                [method, &model, &client](sol::this_state state, const sol::table& request) -> sol::object {
                 const sol::state_view lua(state);
 
                 const auto requestMessage = model.newMessage(method->input_type());
@@ -63,32 +68,33 @@ sol::table registerServiceMethods(sol::state& lua, ProtoModel& model, const goog
 
                 std::function<sol::object(sol::this_state)> iterator =
                     [stream, method, &model](sol::this_state innerState) -> sol::object {
-                        const sol::state_view innerLua(innerState);
-                        const auto responseMessage = model.newMessage(method->output_type());
+                    const sol::state_view innerLua(innerState);
+                    const auto responseMessage = model.newMessage(method->output_type());
 
-                        if (stream->read(responseMessage.get())) {
-                            return sol::object(messageToLuaTable(*responseMessage, innerLua));
-                        }
+                    if (stream->read(responseMessage.get())) {
+                        return sol::object(messageToLuaTable(*responseMessage, innerLua));
+                    }
 
-                        const grpc::Status status = stream->finish();
-                        if (!status.ok()) {
-                            throw std::runtime_error(
-                                "stream " + std::string(method->full_name()) + " failed: " + status.error_message()
-                            );
-                        }
+                    const grpc::Status status = stream->finish();
+                    if (!status.ok()) {
+                        throw std::runtime_error(
+                            "stream " + std::string(method->full_name()) + " failed: " + status.error_message()
+                        );
+                    }
 
-                        return sol::lua_nil;
-                    };
+                    return sol::lua_nil;
+                };
 
                 return sol::make_object(lua, std::move(iterator));
             };
             continue;
         }
 
-        serviceTable[methodName] = [method, &model, &client](sol::this_state state, const sol::table& request) -> sol::table {
+        serviceTable[methodName] =
+            [method, &model, &client](sol::this_state state, const sol::table& request) -> sol::table {
             const sol::state_view lua(state);
 
-            const auto requestMessage = model.newMessage(method->input_type());
+            const auto requestMessage  = model.newMessage(method->input_type());
             const auto responseMessage = model.newMessage(method->output_type());
 
             luaTableToMessage(request, requestMessage.get());
@@ -113,7 +119,7 @@ void registerServices(sol::table& module, sol::state& lua, ProtoModel& model, GR
     }
 }
 
-}
+} // namespace
 
 void registerBindings(sol::state& lua, ProtoModel& model, GRPCClient& client)
 {

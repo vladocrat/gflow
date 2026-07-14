@@ -76,7 +76,13 @@ struct File
 
     File& method(const std::string_view name, const std::string_view input, const std::string_view output)
     {
-        text += std::format("\n---@param req {}\n---@return {}\nfunction M.{}.{}(req) end\n", input, output, currentService, name);
+        text += std::format(
+            "\n---@param req {}\n---@return {}\nfunction M.{}.{}(req) end\n",
+            input,
+            output,
+            currentService,
+            name
+        );
         return *this;
     }
 
@@ -140,7 +146,8 @@ std::string LuaTypeGenerator::generate(const ProtoModel& model)
     return lua.text;
 }
 
-std::vector<std::filesystem::path> LuaTypeGenerator::render(const ProtoModel& model, const std::filesystem::path& targetDir)
+std::vector<std::filesystem::path>
+LuaTypeGenerator::render(const ProtoModel& model, const std::filesystem::path& targetDir)
 {
     const auto filename = targetDir / (model.name() + ".lua");
 

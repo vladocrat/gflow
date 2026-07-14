@@ -3,11 +3,13 @@
 #include <memory>
 #include <string>
 
-namespace grpc {
+namespace grpc
+{
 class Server;
 }
 
-namespace gflow::demo {
+namespace gflow::demo
+{
 
 class EchoServiceImpl;
 
@@ -17,7 +19,7 @@ public:
     explicit EchoServer(const std::string& address);
     ~EchoServer();
 
-    EchoServer(const EchoServer&) = delete;
+    EchoServer(const EchoServer&)            = delete;
     EchoServer& operator=(const EchoServer&) = delete;
 
     int port() const;
@@ -29,4 +31,4 @@ private:
     int m_port = 0;
 };
 
-}
+} // namespace gflow::demo

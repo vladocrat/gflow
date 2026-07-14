@@ -1,8 +1,8 @@
 #include "GRPCClient.hpp"
 
-#include <grpcpp/impl/rpc_method.h>
 #include <grpcpp/impl/client_unary_call.h>
 #include <grpcpp/impl/proto_utils.h>
+#include <grpcpp/impl/rpc_method.h>
 
 #include "ServerStream.hpp"
 
@@ -15,7 +15,7 @@ namespace
 std::string methodPath(const google::protobuf::MethodDescriptor* method)
 {
     const absl::string_view serviceName = method->service()->full_name();
-    const absl::string_view methodName = method->name();
+    const absl::string_view methodName  = method->name();
 
     std::string path;
     path += '/';
@@ -32,9 +32,8 @@ struct GRPCClient::impl_t
     std::shared_ptr<grpc::Channel> channel;
 
     impl_t(std::shared_ptr<grpc::Channel>&& ch)
-    : channel { std::move(ch) }
-    {
-    }
+    : channel {std::move(ch)}
+    {}
 };
 
 GRPCClient::GRPCClient(const std::string& address, uint16_t port)
@@ -57,7 +56,11 @@ grpc::Status GRPCClient::unaryCall(
     context.set_deadline(std::chrono::system_clock::now() + timeout);
 
     return grpc::internal::BlockingUnaryCall<google::protobuf::Message, google::protobuf::Message>(
-        impl().channel.get(), rpcMethod, &context, request, response
+        impl().channel.get(),
+        rpcMethod,
+        &context,
+        request,
+        response
     );
 }
 

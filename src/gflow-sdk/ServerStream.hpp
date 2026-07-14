@@ -21,10 +21,10 @@ public:
     );
     ~ServerStream();
 
-    ServerStream(const ServerStream&) = delete;
+    ServerStream(const ServerStream&)            = delete;
     ServerStream& operator=(const ServerStream&) = delete;
-    ServerStream(ServerStream&&) = delete;
-    ServerStream& operator=(ServerStream&&) = delete;
+    ServerStream(ServerStream&&)                 = delete;
+    ServerStream& operator=(ServerStream&&)      = delete;
 
     bool read(google::protobuf::Message* message);
     grpc::Status finish();

@@ -129,7 +129,9 @@ std::string keyLabel(const sol::object& key)
 
 void tableToMessage(const sol::table& table, Message* message, const std::string& path);
 
-void writeScalar(Message* message, const FieldDescriptor* field, const sol::object& value, bool repeated, const std::string& path)
+void writeScalar(
+    Message* message, const FieldDescriptor* field, const sol::object& value, bool repeated, const std::string& path
+)
 {
     const Reflection* reflection = message->GetReflection();
     switch (field->cpp_type()) {
@@ -175,7 +177,7 @@ void writeScalar(Message* message, const FieldDescriptor* field, const sol::obje
     }
     case FieldDescriptor::CPPTYPE_ENUM: {
         const std::string name = expectString(value, path);
-        const auto* enumValue = field->enum_type()->FindValueByName(name);
+        const auto* enumValue  = field->enum_type()->FindValueByName(name);
         if (enumValue == nullptr) {
             fail(path, "unknown enum value '" + name + "' for enum " + toStd(field->enum_type()->name()));
         }
@@ -199,10 +201,10 @@ void writeSingular(Message* message, const FieldDescriptor* field, const sol::ob
 
 void writeMap(Message* message, const FieldDescriptor* field, const sol::object& value, const std::string& path)
 {
-    const sol::table entries = expectTable(value, path, "map " + toStd(field->name()));
+    const sol::table entries     = expectTable(value, path, "map " + toStd(field->name()));
     const Reflection* reflection = message->GetReflection();
-    const auto* keyField = field->message_type()->map_key();
-    const auto* valueField = field->message_type()->map_value();
+    const auto* keyField         = field->message_type()->map_key();
+    const auto* valueField       = field->message_type()->map_value();
 
     for (const auto& pair : entries) {
         Message* entry = reflection->AddMessage(message, field);
@@ -221,13 +223,13 @@ void tableToMessage(const sol::table& table, Message* message, const std::string
             fail(path, "field names must be strings");
         }
         const std::string key = pair.first.as<std::string>();
-        const auto* field = descriptor->FindFieldByName(key);
+        const auto* field     = descriptor->FindFieldByName(key);
         if (field == nullptr) {
             fail(path, "unknown field '" + key + "' in " + toStd(descriptor->name()));
         }
 
         const std::string fieldPath = child(path, key);
-        const sol::object& value = pair.second;
+        const sol::object& value    = pair.second;
 
         if (const auto* oneof = field->real_containing_oneof(); oneof != nullptr) {
             if (oneofsSeen.count(oneof) != 0) {
@@ -242,7 +244,7 @@ void tableToMessage(const sol::table& table, Message* message, const std::string
             const sol::table array = expectTable(value, fieldPath, "repeated " + toStd(field->name()));
             for (std::size_t i = 1; i <= array.size(); ++i) {
                 const std::string elementPath = fieldPath + '[' + std::to_string(i) + ']';
-                const sol::object element = array[i];
+                const sol::object element     = array[i];
                 if (field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE) {
                     const sol::table sub = expectTable(element, elementPath, toStd(field->message_type()->name()));
                     tableToMessage(sub, message->GetReflection()->AddMessage(message, field), elementPath);
@@ -316,34 +318,34 @@ sol::object repeatedToLua(const Message& message, const FieldDescriptor* field, 
 
 sol::table messageToTable(const Message& message, sol::state_view lua)
 {
-    const auto* descriptor = message.GetDescriptor();
+    const auto* descriptor       = message.GetDescriptor();
     const Reflection* reflection = message.GetReflection();
-    sol::table out = lua.create_table();
+    sol::table out               = lua.create_table();
 
     for (int i = 0; i < descriptor->field_count(); ++i) {
-        const auto* field = descriptor->field(i);
+        const auto* field           = descriptor->field(i);
         const std::string fieldName = toStd(field->name());
 
         if (field->is_map()) {
-            sol::table map = lua.create_table();
-            const auto* keyField = field->message_type()->map_key();
+            sol::table map         = lua.create_table();
+            const auto* keyField   = field->message_type()->map_key();
             const auto* valueField = field->message_type()->map_value();
-            const int size = reflection->FieldSize(message, field);
+            const int size         = reflection->FieldSize(message, field);
             for (int j = 0; j < size; ++j) {
-                const Message& entry = reflection->GetRepeatedMessage(message, field, j);
+                const Message& entry                     = reflection->GetRepeatedMessage(message, field, j);
                 map[singularToLua(entry, keyField, lua)] = singularToLua(entry, valueField, lua);
             }
             out[fieldName] = map;
         } else if (field->is_repeated()) {
             sol::table array = lua.create_table();
-            const int size = reflection->FieldSize(message, field);
+            const int size   = reflection->FieldSize(message, field);
             for (int j = 0; j < size; ++j) {
                 array[j + 1] = repeatedToLua(message, field, j, lua);
             }
             out[fieldName] = array;
         } else {
-            const bool optional = field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE
-                || field->real_containing_oneof() != nullptr;
+            const bool optional =
+                field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE || field->real_containing_oneof() != nullptr;
             if (optional && !reflection->HasField(message, field)) {
                 continue;
             }
@@ -370,7 +372,8 @@ std::string luaTypeName(const google::protobuf::FieldDescriptor* field)
 {
     if (field->is_map()) {
         return std::format(
-            "table<{}, {}>", luaScalarType(field->message_type()->map_key()),
+            "table<{}, {}>",
+            luaScalarType(field->message_type()->map_key()),
             luaScalarType(field->message_type()->map_value())
         );
     }

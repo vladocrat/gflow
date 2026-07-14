@@ -7,7 +7,8 @@
 
 #include "echo.grpc.pb.h"
 
-namespace gflow::demo {
+namespace gflow::demo
+{
 
 class EchoServiceImpl final : public EchoService::Service
 {
@@ -20,8 +21,8 @@ public:
         return grpc::Status::OK;
     }
 
-    grpc::Status Subscribe(grpc::ServerContext* context, const TickRequest* request,
-                           grpc::ServerWriter<Tick>* writer) override
+    grpc::Status
+    Subscribe(grpc::ServerContext* context, const TickRequest* request, grpc::ServerWriter<Tick>* writer) override
     {
         for (int i = 0; i < request->ticks(); ++i) {
             if (context->IsCancelled()) {
@@ -46,7 +47,7 @@ public:
 };
 
 EchoServer::EchoServer(const std::string& address)
-    : m_service(std::make_unique<EchoServiceImpl>())
+: m_service(std::make_unique<EchoServiceImpl>())
 {
     grpc::ServerBuilder builder;
     builder.AddListeningPort(address, grpc::InsecureServerCredentials(), &m_port);
@@ -73,4 +74,4 @@ void EchoServer::wait()
     }
 }
 
-}
+} // namespace gflow::demo

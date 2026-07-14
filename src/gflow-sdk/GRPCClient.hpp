@@ -21,10 +21,10 @@ public:
     explicit GRPCClient(const std::string& address, uint16_t port);
     virtual ~GRPCClient();
 
-    GRPCClient(const GRPCClient&) = delete;
+    GRPCClient(const GRPCClient&)            = delete;
     GRPCClient& operator=(const GRPCClient&) = delete;
-    GRPCClient(GRPCClient&&) = delete;
-    GRPCClient& operator=(GRPCClient&&) = delete;
+    GRPCClient(GRPCClient&&)                 = delete;
+    GRPCClient& operator=(GRPCClient&&)      = delete;
 
     grpc::Status unaryCall(
         const google::protobuf::MethodDescriptor* method, const google::protobuf::Message& request,

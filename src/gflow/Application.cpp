@@ -4,9 +4,9 @@
 
 #include <sol/state.hpp>
 
+#include "gflow-sdk/GRPCClient.hpp"
 #include "gflow-sdk/LuaTypeGenerator.hpp"
 #include "gflow-sdk/ProtoModel.hpp"
-#include "gflow-sdk/GRPCClient.hpp"
 
 #include "CliParser.hpp"
 #include "Registrar.hpp"
@@ -45,7 +45,14 @@ struct Application::impl_t
         gflow::GRPCClient client(opts.address, opts.port);
 
         sol::state lua;
-        lua.open_libraries(sol::lib::base, sol::lib::string, sol::lib::table, sol::lib::math, sol::lib::os, sol::lib::package);
+        lua.open_libraries(
+            sol::lib::base,
+            sol::lib::string,
+            sol::lib::table,
+            sol::lib::math,
+            sol::lib::os,
+            sol::lib::package
+        );
 
         gflow::registerBindings(lua, model, client);
 
@@ -80,13 +87,13 @@ int Application::run(int argc, char** argv)
     }
 
     switch (impl().parser.selected()) {
-        case Command::Generate:
-            return impl().runGenerate(impl().parser.generateOptions());
-        case Command::Run:
-            return impl().runRun(impl().parser.runOptions());
-        case Command::None:
-            spdlog::error("Invalid command");
-            return -1;
+    case Command::Generate:
+        return impl().runGenerate(impl().parser.generateOptions());
+    case Command::Run:
+        return impl().runRun(impl().parser.runOptions());
+    case Command::None:
+        spdlog::error("Invalid command");
+        return -1;
     }
 
     return 0;

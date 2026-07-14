@@ -1,7 +1,7 @@
 #include "ServerStream.hpp"
 
-#include <grpcpp/impl/rpc_method.h>
 #include <grpcpp/impl/proto_utils.h>
+#include <grpcpp/impl/rpc_method.h>
 #include <grpcpp/support/sync_stream.h>
 
 namespace gflow
@@ -13,7 +13,7 @@ namespace
 std::string methodPath(const google::protobuf::MethodDescriptor* method)
 {
     const absl::string_view serviceName = method->service()->full_name();
-    const absl::string_view methodName = method->name();
+    const absl::string_view methodName  = method->name();
 
     std::string path;
     path += '/';
@@ -43,9 +43,14 @@ ServerStream::ServerStream(
     const std::string path = methodPath(method);
     const grpc::internal::RpcMethod rpcMethod(path.c_str(), grpc::internal::RpcMethod::SERVER_STREAMING);
 
-    impl().reader.reset(grpc::internal::ClientReaderFactory<google::protobuf::Message>::Create(
-        channel.get(), rpcMethod, &impl().context, request
-    ));
+    impl().reader.reset(
+        grpc::internal::ClientReaderFactory<google::protobuf::Message>::Create(
+            channel.get(),
+            rpcMethod,
+            &impl().context,
+            request
+        )
+    );
 }
 
 ServerStream::~ServerStream()

@@ -60,8 +60,7 @@ jobs:
       - name: Check formatting
         run: |
           clang-format --version
-          files=$(find src -type f \( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \))
-          clang-format --dry-run -Werror --style=file $files
+          bash scripts/linux/format-check.sh --check-only
 
   clang-tidy:
     name: clang-tidy
@@ -96,7 +95,4 @@ jobs:
         run: cmake --preset windows-msvc-debug
 
       - name: Run clang-tidy
-        run: |
-          clang-tidy --version
-          $files = Get-ChildItem -Path src,tests -Recurse -Include *.cpp,*.h,*.hpp | ForEach-Object { $_.FullName }
-          clang-tidy -p build --warnings-as-errors=* $files
+        run: .\scripts\windows\clang-tidy.ps1
