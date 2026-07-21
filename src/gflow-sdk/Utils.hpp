@@ -9,7 +9,7 @@ template <typename Container>
 struct Closure
 {
     template <std::ranges::range Range>
-    friend Container operator|(Range&& r, [[maybe_unused]] Closure /*self*/)
+    friend Container operator|(const Range& r, [[maybe_unused]] Closure /*self*/)
     {
         return Container(std::ranges::begin(r), std::ranges::end(r));
     }

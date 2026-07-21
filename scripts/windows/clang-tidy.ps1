@@ -83,8 +83,11 @@ if ($code -ne 0) {
     exit $code
 }
 
-$srcDir = Join-Path $repoRoot 'src'
-$sources = Get-ChildItem -Path $srcDir -Recurse -File -Include *.cpp, *.h, *.hpp |
+$srcDirs = @(
+    (Join-Path $repoRoot 'src\gflow'),
+    (Join-Path $repoRoot 'src\gflow-sdk')
+)
+$sources = Get-ChildItem -Path $srcDirs -Recurse -File -Include *.cpp, *.h, *.hpp |
     ForEach-Object { $_.FullName }
 
 if (-not $sources -or @($sources).Count -eq 0) {
@@ -94,7 +97,7 @@ if (-not $sources -or @($sources).Count -eq 0) {
 
 Invoke-Tool $clangTidy @('--version') | Out-Null
 
-Write-Host "Running clang-tidy over $(@($sources).Count) file(s) in src\ ..."
+Write-Host "Running clang-tidy over $(@($sources).Count) file(s) in src\gflow and src\gflow-sdk ..."
 $code = Invoke-Tool $clangTidy (@('-p', $buildDir, '--warnings-as-errors=*') + $sources)
 
 if ($code -ne 0) {

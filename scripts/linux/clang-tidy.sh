@@ -50,7 +50,7 @@ cmake --build "$build_dir"
 files=()
 while IFS= read -r -d '' f; do
     files+=("$f")
-done < <(find "$repo_root/src" -type f \( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \) -print0)
+done < <(find "$repo_root/src/gflow" "$repo_root/src/gflow-sdk" -type f \( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \) -print0)
 
 if [ "${#files[@]}" -eq 0 ]; then
     echo "No source files to check."

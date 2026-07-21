@@ -21,7 +21,7 @@ using google::protobuf::Reflection;
 
 std::string toStd(absl::string_view value)
 {
-    return std::string(value.data(), value.size());
+    return {value.data(), value.size()};
 }
 
 std::string luaScalarType(const FieldDescriptor* field)
@@ -141,7 +141,7 @@ void writeScalar(
         break;
     }
     case FieldDescriptor::CPPTYPE_INT64: {
-        const auto x = static_cast<int64_t>(expectInt(value, path));
+        const auto x = expectInt(value, path);
         repeated ? reflection->AddInt64(message, field, x) : reflection->SetInt64(message, field, x);
         break;
     }
@@ -232,7 +232,7 @@ void tableToMessage(const sol::table& table, Message* message, const std::string
         const sol::object& value    = pair.second;
 
         if (const auto* oneof = field->real_containing_oneof(); oneof != nullptr) {
-            if (oneofsSeen.count(oneof) != 0) {
+            if (!oneofsSeen.contains(oneof)) {
                 fail(fieldPath, "multiple fields set for oneof '" + toStd(oneof->name()) + "'");
             }
             oneofsSeen.insert(oneof);
@@ -258,9 +258,9 @@ void tableToMessage(const sol::table& table, Message* message, const std::string
     }
 }
 
-sol::table messageToTable(const Message& message, sol::state_view lua);
+sol::table  messageToTable(const Message& message, sol::state_view& lua);
 
-sol::object singularToLua(const Message& message, const FieldDescriptor* field, sol::state_view lua)
+sol::object singularToLua(const Message& message, const FieldDescriptor* field, sol::state_view& lua)
 {
     const Reflection* reflection = message.GetReflection();
     switch (field->cpp_type()) {
@@ -283,12 +283,12 @@ sol::object singularToLua(const Message& message, const FieldDescriptor* field, 
     case FieldDescriptor::CPPTYPE_ENUM:
         return sol::make_object(lua, toStd(reflection->GetEnum(message, field)->name()));
     case FieldDescriptor::CPPTYPE_MESSAGE:
-        return sol::object(messageToTable(reflection->GetMessage(message, field), lua));
+        return {messageToTable(reflection->GetMessage(message, field), lua)};
     }
     return sol::lua_nil;
 }
 
-sol::object repeatedToLua(const Message& message, const FieldDescriptor* field, int index, sol::state_view lua)
+sol::object repeatedToLua(const Message& message, const FieldDescriptor* field, int index, sol::state_view& lua)
 {
     const Reflection* reflection = message.GetReflection();
     switch (field->cpp_type()) {
@@ -311,12 +311,12 @@ sol::object repeatedToLua(const Message& message, const FieldDescriptor* field, 
     case FieldDescriptor::CPPTYPE_ENUM:
         return sol::make_object(lua, toStd(reflection->GetRepeatedEnum(message, field, index)->name()));
     case FieldDescriptor::CPPTYPE_MESSAGE:
-        return sol::object(messageToTable(reflection->GetRepeatedMessage(message, field, index), lua));
+        return {messageToTable(reflection->GetRepeatedMessage(message, field, index), lua)};
     }
     return sol::lua_nil;
 }
 
-sol::table messageToTable(const Message& message, sol::state_view lua)
+sol::table messageToTable(const Message& message, sol::state_view& lua)
 {
     const auto* descriptor       = message.GetDescriptor();
     const Reflection* reflection = message.GetReflection();
@@ -363,7 +363,7 @@ void luaTableToMessage(const sol::table& table, google::protobuf::Message* messa
     tableToMessage(table, message, toStd(message->GetDescriptor()->name()));
 }
 
-sol::table messageToLuaTable(const google::protobuf::Message& message, sol::state_view lua)
+sol::table messageToLuaTable(const google::protobuf::Message& message, sol::state_view& lua)
 {
     return messageToTable(message, lua);
 }

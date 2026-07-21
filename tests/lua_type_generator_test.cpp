@@ -36,7 +36,7 @@ protected:
         std::string error;
         const std::filesystem::path proto = std::filesystem::path(GFLOW_PROTO_DIR) / "echo.proto";
         ASSERT_TRUE(m_model.load(proto, {}, &error)) << error;
-        m_output = m_gen.generate(m_model);
+        m_output =  gflow::LuaTypeGenerator::generate(m_model);
     }
 
     gflow::ProtoModel m_model;
@@ -151,8 +151,7 @@ TEST(LuaTypeGeneratorEdge, EmptyModelRendersMetaOnly)
     std::string error;
     ASSERT_TRUE(model.load(dir / "empty.proto", {}, &error)) << error;
 
-    gflow::LuaTypeGenerator gen;
-    const std::string out = gen.generate(model);
+    const std::string out = gflow::LuaTypeGenerator::generate(model);
 
     EXPECT_TRUE(contains(out, "---@meta"));
     EXPECT_FALSE(contains(out, "---@class"));
@@ -175,8 +174,7 @@ TEST(LuaTypeGeneratorEdge, MultipleServicesProduceSingleReturn)
     std::string error;
     ASSERT_TRUE(model.load(dir / "multi.proto", {}, &error)) << error;
 
-    gflow::LuaTypeGenerator gen;
-    const std::string out = gen.generate(model);
+    const std::string out = gflow::LuaTypeGenerator::generate(model);
 
     EXPECT_EQ(count(out, "\nreturn M"), 1u);
     EXPECT_TRUE(contains(out, "M.Alpha = {}"));

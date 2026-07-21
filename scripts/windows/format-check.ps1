@@ -64,8 +64,11 @@ $clangFormat = $clangFormatCmd.Source
 if ($Files -and $Files.Count -gt 0) {
     $sources = $Files | ForEach-Object { (Resolve-Path $_).Path }
 } else {
-    $srcDir = Join-Path $repoRoot 'src'
-    $sources = Get-ChildItem -Path $srcDir -Recurse -File -Include *.cpp, *.h, *.hpp |
+    $srcDirs = @(
+        (Join-Path $repoRoot 'src\gflow'),
+        (Join-Path $repoRoot 'src\gflow-sdk')
+    )
+    $sources = Get-ChildItem -Path $srcDirs -Recurse -File -Include *.cpp, *.h, *.hpp |
         ForEach-Object { $_.FullName }
 }
 

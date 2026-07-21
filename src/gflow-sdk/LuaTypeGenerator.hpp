@@ -12,7 +12,7 @@ class ProtoModel;
 class LuaTypeGenerator
 {
 public:
-    std::string generate(const ProtoModel& model);
+    static std::string generate(const ProtoModel& model);
     std::vector<std::filesystem::path> render(const ProtoModel& model, const std::filesystem::path& targetDir);
 };
 

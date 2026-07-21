@@ -14,7 +14,7 @@ namespace gflow
 {
 
 void luaTableToMessage(const sol::table& table, google::protobuf::Message* message);
-sol::table messageToLuaTable(const google::protobuf::Message& message, sol::state_view lua);
+sol::table messageToLuaTable(const google::protobuf::Message& message, sol::state_view& lua);
 
 std::string luaTypeName(const google::protobuf::FieldDescriptor* field);
 

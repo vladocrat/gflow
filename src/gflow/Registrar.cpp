@@ -64,15 +64,15 @@ sol::table registerServiceMethods(
                 const auto requestMessage = model.newMessage(method->input_type());
                 luaTableToMessage(request, requestMessage.get());
 
-                std::shared_ptr<ServerStream> stream = client.serverStreamingCall(method, *requestMessage);
+                const std::shared_ptr<ServerStream> stream = client.serverStreamingCall(method, *requestMessage);
 
                 std::function<sol::object(sol::this_state)> iterator =
                     [stream, method, &model](sol::this_state innerState) -> sol::object {
-                    const sol::state_view innerLua(innerState);
+                    sol::state_view innerLua(innerState);
                     const auto responseMessage = model.newMessage(method->output_type());
 
                     if (stream->read(responseMessage.get())) {
-                        return sol::object(messageToLuaTable(*responseMessage, innerLua));
+                        return {messageToLuaTable(*responseMessage, innerLua)};
                     }
 
                     const grpc::Status status = stream->finish();
@@ -92,7 +92,7 @@ sol::table registerServiceMethods(
 
         serviceTable[methodName] =
             [method, &model, &client](sol::this_state state, const sol::table& request) -> sol::table {
-            const sol::state_view lua(state);
+            sol::state_view lua(state);
 
             const auto requestMessage  = model.newMessage(method->input_type());
             const auto responseMessage = model.newMessage(method->output_type());
