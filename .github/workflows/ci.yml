@@ -16,37 +16,6 @@ env:
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
-  build-test:
-    name: Build & test (Windows MSVC, Debug)
-    runs-on: windows-2022
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up MSVC environment
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
-
-      - name: Set up vcpkg
-        run: echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
-
-      - name: Export vcpkg binary cache credentials
-        uses: actions/github-script@v7
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RESULTS_URL', process.env.ACTIONS_RESULTS_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-
-      - name: Configure
-        run: cmake --preset windows-msvc-debug
-
-      - name: Build
-        run: cmake --build --preset windows-msvc-debug --target gflow gflow_tests
-
-      - name: Test
-        run: ctest --preset windows-msvc-debug
-
   clang-format:
     name: clang-format
     runs-on: ubuntu-latest
@@ -96,3 +65,44 @@ jobs:
 
       - name: Run clang-tidy
         run: .\scripts\windows\clang-tidy.ps1
+
+  build-test:
+    name: Build & test (Windows MSVC, Debug)
+    needs: [clang-format, clang-tidy]
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Set up vcpkg
+        run: echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV
+
+      - name: Export vcpkg binary cache credentials
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env.ACTIONS_RESULTS_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Configure
+        run: cmake --preset windows-msvc-debug
+
+      - name: Build
+        run: cmake --build --preset windows-msvc-debug --target gflow gflow_tests
+
+      - name: Upload gflow binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: gflow-windows-msvc-debug
+          path: |
+            build/gflow.exe
+            build/*.dll
+          if-no-files-found: error
+
+      - name: Test
+        run: ctest --preset windows-msvc-debug

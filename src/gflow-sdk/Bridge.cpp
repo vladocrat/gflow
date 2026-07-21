@@ -258,7 +258,7 @@ void tableToMessage(const sol::table& table, Message* message, const std::string
     }
 }
 
-sol::table  messageToTable(const Message& message, sol::state_view& lua);
+sol::table messageToTable(const Message& message, sol::state_view& lua);
 
 sol::object singularToLua(const Message& message, const FieldDescriptor* field, sol::state_view& lua)
 {
