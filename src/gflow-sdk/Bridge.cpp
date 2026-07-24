@@ -363,8 +363,8 @@ sol::table messageToTable(const Message& message, sol::state_view& lua)
             continue;
         }
 
-
-        const bool optional = field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE || field->containing_oneof() != nullptr;
+        const bool optional =
+            field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE || field->containing_oneof() != nullptr;
 
         if (optional && !reflection->HasField(message, field)) {
             continue;
