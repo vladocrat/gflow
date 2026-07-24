@@ -37,7 +37,7 @@ struct ProtoModel::impl_t
     google::protobuf::compiler::DiskSourceTree tree;
     CollectingErrors errors;
     std::unique_ptr<google::protobuf::compiler::Importer> importer;
-    mutable google::protobuf::DynamicMessageFactory factory;
+    google::protobuf::DynamicMessageFactory factory;
     const google::protobuf::FileDescriptor* file {nullptr};
 
     void registerPaths(const std::filesystem::path& entryPoint, const std::vector<std::filesystem::path>& importPaths)

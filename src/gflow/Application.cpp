@@ -17,7 +17,6 @@ namespace gflow
 struct Application::impl_t
 {
     CliParser parser;
-    gflow::LuaTypeGenerator gen;
     gflow::ProtoModel model;
 
     int runGenerate(const GenerateOptions& opts)
@@ -29,7 +28,7 @@ struct Application::impl_t
             return 1;
         }
 
-        gen.render(model, opts.outputDir);
+        gflow::LuaTypeGenerator::render(model, opts.outputDir);
         return 0;
     }
 

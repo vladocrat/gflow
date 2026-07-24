@@ -5,8 +5,8 @@ add_library(echo-service STATIC
 protobuf_generate(
   TARGET echo-service
   LANGUAGE cpp
-  IMPORT_DIRS "${CMAKE_SOURCE_DIR}/proto"
-  PROTOS "${CMAKE_SOURCE_DIR}/proto/echo.proto"
+  IMPORT_DIRS "${PROTO_DIR}"
+  PROTOS "${PROTO_DIR}/echo.proto"
   PROTOC_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
 protobuf_generate(
@@ -14,8 +14,8 @@ protobuf_generate(
   LANGUAGE grpc
   GENERATE_EXTENSIONS .grpc.pb.h .grpc.pb.cc
   PLUGIN "protoc-gen-grpc=$<TARGET_FILE:gRPC::grpc_cpp_plugin>"
-  IMPORT_DIRS "${CMAKE_SOURCE_DIR}/proto"
-  PROTOS "${CMAKE_SOURCE_DIR}/proto/echo.proto"
+  IMPORT_DIRS "${PROTO_DIR}"
+  PROTOS "${PROTO_DIR}/echo.proto"
   PROTOC_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
 target_include_directories(echo-service PUBLIC

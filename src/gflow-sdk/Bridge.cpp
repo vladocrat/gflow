@@ -222,8 +222,10 @@ void tableToMessage(const sol::table& table, Message* message, const std::string
         if (pair.first.get_type() != sol::type::string) {
             fail(path, "field names must be strings");
         }
+
         const std::string key = pair.first.as<std::string>();
         const auto* field     = descriptor->FindFieldByName(key);
+
         if (field == nullptr) {
             fail(path, "unknown field '" + key + "' in " + toStd(descriptor->name()));
         }
@@ -231,30 +233,40 @@ void tableToMessage(const sol::table& table, Message* message, const std::string
         const std::string fieldPath = child(path, key);
         const sol::object& value    = pair.second;
 
-        if (const auto* oneof = field->real_containing_oneof(); oneof != nullptr) {
-            if (!oneofsSeen.contains(oneof)) {
+        if (const auto* oneof = field->real_containing_oneof(); oneof) {
+
+            if (oneofsSeen.contains(oneof)) {
                 fail(fieldPath, "multiple fields set for oneof '" + toStd(oneof->name()) + "'");
             }
+
             oneofsSeen.insert(oneof);
         }
 
         if (field->is_map()) {
             writeMap(message, field, value, fieldPath);
-        } else if (field->is_repeated()) {
+            continue;
+        }
+
+        if (field->is_repeated()) {
             const sol::table array = expectTable(value, fieldPath, "repeated " + toStd(field->name()));
+
             for (std::size_t i = 1; i <= array.size(); ++i) {
                 const std::string elementPath = fieldPath + '[' + std::to_string(i) + ']';
                 const sol::object element     = array[i];
-                if (field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE) {
-                    const sol::table sub = expectTable(element, elementPath, toStd(field->message_type()->name()));
-                    tableToMessage(sub, message->GetReflection()->AddMessage(message, field), elementPath);
-                } else {
+
+                if (field->cpp_type() != FieldDescriptor::CPPTYPE_MESSAGE) {
                     writeScalar(message, field, element, true, elementPath);
+                    continue;
                 }
+
+                const sol::table sub = expectTable(element, elementPath, toStd(field->message_type()->name()));
+                tableToMessage(sub, message->GetReflection()->AddMessage(message, field), elementPath);
             }
-        } else {
-            writeSingular(message, field, value, fieldPath);
+
+            continue;
         }
+
+        writeSingular(message, field, value, fieldPath);
     }
 }
 
@@ -330,27 +342,35 @@ sol::table messageToTable(const Message& message, sol::state_view& lua)
             sol::table map         = lua.create_table();
             const auto* keyField   = field->message_type()->map_key();
             const auto* valueField = field->message_type()->map_value();
-            const int size         = reflection->FieldSize(message, field);
-            for (int j = 0; j < size; ++j) {
+
+            for (int j = 0; j < reflection->FieldSize(message, field); ++j) {
                 const Message& entry                     = reflection->GetRepeatedMessage(message, field, j);
                 map[singularToLua(entry, keyField, lua)] = singularToLua(entry, valueField, lua);
             }
+
             out[fieldName] = map;
-        } else if (field->is_repeated()) {
+            continue;
+        }
+
+        if (field->is_repeated()) {
             sol::table array = lua.create_table();
-            const int size   = reflection->FieldSize(message, field);
-            for (int j = 0; j < size; ++j) {
+
+            for (int j = 0; j < reflection->FieldSize(message, field); ++j) {
                 array[j + 1] = repeatedToLua(message, field, j, lua);
             }
+
             out[fieldName] = array;
-        } else {
-            const bool optional =
-                field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE || field->real_containing_oneof() != nullptr;
-            if (optional && !reflection->HasField(message, field)) {
-                continue;
-            }
-            out[fieldName] = singularToLua(message, field, lua);
+            continue;
         }
+
+
+        const bool optional = field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE || field->containing_oneof() != nullptr;
+
+        if (optional && !reflection->HasField(message, field)) {
+            continue;
+        }
+
+        out[fieldName] = singularToLua(message, field, lua);
     }
 
     return out;
