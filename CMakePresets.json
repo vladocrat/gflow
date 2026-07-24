@@ -7,6 +7,7 @@
       "displayName": "Windows MSVC Debug (Ninja)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "GFLOW_WARNINGS_AS_ERRORS": "ON"
@@ -15,19 +16,34 @@
     },
     {
       "name": "vs2022",
-      "displayName": "Windows MSVC Debug (Visual Studio; no dev prompt needed)",
+      "displayName": "Windows MSVC Debug",
       "generator": "Visual Studio 17 2022",
       "architecture": "x64",
       "binaryDir": "${sourceDir}/build-vs",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
         "GFLOW_WARNINGS_AS_ERRORS": "ON"
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+    {
+      "name": "release",
+      "displayName": "Release (Ninja, portable)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-release",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "GFLOW_BUILD_TESTS": "OFF",
+        "GFLOW_BUILD_MOCK_SERVER": "OFF",
+        "GFLOW_WARNINGS_AS_ERRORS": "OFF"
+      }
     }
   ],
   "buildPresets": [
     { "name": "windows-msvc-debug", "configurePreset": "windows-msvc-debug" },
-    { "name": "vs2022", "configurePreset": "vs2022", "configuration": "Debug" }
+    { "name": "vs2022", "configurePreset": "vs2022", "configuration": "Debug" },
+    { "name": "release", "configurePreset": "release", "configuration": "Release" }
   ],
   "testPresets": [
     {

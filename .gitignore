@@ -1,7 +1,11 @@
+.cache/
 /build/
 /build-vs/
-/third_party/
+/build-release/
+/dist/
+/vcpkg_installed/
 .vs/
 .vscode/
 *.user
 CMakeUserPresets.json
+types/

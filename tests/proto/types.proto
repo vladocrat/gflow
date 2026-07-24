@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package types;
+
+// Every wire-level scalar type in one place, plus proto3 explicit presence
+// (the `optional` keyword), to stress Bridge.cpp's scalar dispatch and its
+// field-presence logic in messageToTable.
+enum Suit {
+  SUIT_UNSPECIFIED = 0;
+  CLUBS = 1;
+  DIAMONDS = 2;
+  HEARTS = 3;
+  SPADES = 4;
+}
+
+message Empty {
+}
+
+// Self-referential recursive message: repeated field of its own type, to
+// stress unbounded recursion in both tableToMessage and messageToTable.
+message Node {
+  string label = 1;
+  repeated Node children = 2;
+}
+
+message Kitchen {
+  int32 i32 = 1;
+  int64 i64 = 2;
+  uint32 u32 = 3;
+  uint64 u64 = 4;
+  sint32 s32 = 5;
+  sint64 s64 = 6;
+  fixed32 f32 = 7;
+  fixed64 f64 = 8;
+  sfixed32 sf32 = 9;
+  sfixed64 sf64 = 10;
+  float f = 11;
+  double d = 12;
+  bool b = 13;
+  string str = 14;
+  bytes raw = 15;
+
+  // proto3 explicit presence via synthetic oneofs.
+  optional int32 maybe_count = 16;
+  optional string maybe_name = 17;
+
+  Suit suit = 18;
+  repeated Suit suits = 19;
+
+  Node tree = 20;
+  repeated Node forest = 21;
+
+  map<string, int32> scores = 22;
+  map<int64, Node> nodes_by_id = 23;
+  map<string, Suit> suit_by_name = 24;
+
+  Empty nothing = 25;
+
+  // Two independent real oneofs in the same message, one of whose members is
+  // a message type and one an Empty type, to stress oneofsSeen tracking.
+  oneof payload {
+    string text = 30;
+    int32 number = 31;
+    Node node_payload = 32;
+    Empty empty_payload = 33;
+  }
+
+  oneof extra {
+    bool flag = 40;
+    double amount = 41;
+  }
+}

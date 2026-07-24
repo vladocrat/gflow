@@ -1,39 +1,65 @@
+---
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AlignArrayOfStructures: Left
+AllowShortEnumsOnASingleLine: false
+QualifierAlignment: Left
+SortIncludes:
+  Enabled: true
+  IgnoreCase: true
+IndentWrappedFunctionNames: false
+PackConstructorInitializers: Never
+BreakConstructorInitializers: BeforeColon
+ConstructorInitializerIndentWidth: 0
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterForeachMacros: true
+  AfterFunctionDeclarationName: true
+  AfterFunctionDefinitionName: true
+  AfterIfMacros: true
+SpaceBeforeRangeBasedForLoopColon: true
+AllowShortLambdasOnASingleLine: None
+LambdaBodyIndentation: OuterScope
 Language: Cpp
-IndentWidth: 4
-ColumnLimit: 100
-AlignAfterOpenBracket: Align
-AlignOperands: true
-AllowShortFunctionsOnASingleLine: Inline
-SpaceBeforeAssignmentOperators : true
-MaxEmptyLinesToKeep: 1
-IndentCaseLabels: true
-BreakInheritanceList: BeforeComma 
+LineEnding: LF
+SortUsingDeclarations: LexicographicNumeric
+AlignConsecutiveAssignments:
+  Enabled: true
+AllowShortLoopsOnASingleLine: false
+AllowShortNamespacesOnASingleLine: false
+SpacesInSquareBrackets: false
+AlignEscapedNewlines: Left
+AlignTrailingComments:
+  Kind: Always
+AllowShortBlocksOnASingleLine: Never
+BinPackLongBracedList: false
+AlignAfterOpenBracket: BlockIndent
+ColumnLimit: 120
+DerivePointerAlignment: false
+EnumTrailingComma: Insert
+FixNamespaceComments: true
+IncludeBlocks: Preserve
+CompactNamespaces: false
+BreakTemplateDeclarations: Yes
 PointerAlignment: Left
 BreakBeforeBraces: Custom
 BraceWrapping:
-    AfterClass: true
-    AfterControlStatement: false
-    AfterEnum: true
-    AfterFunction: true
-    AfterStruct: true
-    SplitEmptyFunction: false
-    AfterNamespace: true
-    BeforeElse: false
-    BeforeCatch: false
-BinPackArguments: true
-BinPackParameters: true
-BreakBeforeBinaryOperators: NonAssignment
-BreakBeforeTernaryOperators: true
-BreakConstructorInitializers: BeforeComma
-IncludeBlocks: Preserve
-IndentWrappedFunctionNames: true
-KeepEmptyLinesAtTheStartOfBlocks: false
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: ControlStatements
-SpaceInEmptyParentheses: false
-SpacesInCStyleCastParentheses: false
-SpacesInContainerLiterals: false
-SpacesInParentheses: false
+  AfterClass: true
+  AfterStruct: true
+  AfterNamespace: true
+  AfterFunction: true
+  AfterControlStatement: Never
+  AfterEnum: true
+  BeforeElse: false
+  BeforeCatch: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+IndentWidth: 4
+TabWidth: 4
 AccessModifierOffset: -4
-AlignTrailingComments: false
-NamespaceIndentation: None
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackArguments: false

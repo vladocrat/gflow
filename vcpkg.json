@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "gflow",
+  "version": "0.1.0",
+  "description": "Drive a gRPC server from Lua scripts via runtime proto reflection",
+  "dependencies": [
+    "grpc",
+    "protobuf",
+    "lua"
+  ],
+  "builtin-baseline": "61d43ee6f0cc440dc97983d36e0c85e80fe429d4",
+  "overrides": [
+    {
+      "name": "lua",
+      "version": "5.4.8"
+    }
+  ]
+}

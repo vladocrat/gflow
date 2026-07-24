@@ -30,5 +30,3 @@ CMakeLists.txt text
 *.jpg binary
 *.gz binary
 *.zip binary
-
-third_party/** linguist-vendored

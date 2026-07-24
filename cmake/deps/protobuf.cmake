@@ -1,4 +1,4 @@
 if(NOT TARGET protobuf::libprotobuf)
-  message(STATUS
-    "protobuf: NOT configured (expected from the prebuilt gRPC in third_party; see grpc.cmake).")
+  message(FATAL_ERROR
+    "protobuf: not configured. Expected from vcpkg (see vcpkg.json / deps/grpc.cmake).")
 endif()

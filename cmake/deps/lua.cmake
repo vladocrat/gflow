@@ -1,9 +1,10 @@
-set(GFLOW_LUA_VERSION 5.4.7)
+find_package(Lua REQUIRED)
 
-add_library(lua::lua STATIC IMPORTED)
-set_target_properties(lua::lua PROPERTIES
-    IMPORTED_LOCATION "${GFLOW_THIRD_PARTY}/lib/lua_static.lib"
-    INTERFACE_INCLUDE_DIRECTORIES "${GFLOW_THIRD_PARTY}/include")
-message(STATUS "lua: using prebuilt ${GFLOW_LUA_VERSION} from ${GFLOW_THIRD_PARTY}")
-return()
+if(NOT TARGET lua::lua)
+  add_library(lua::lua INTERFACE IMPORTED)
+  set_target_properties(lua::lua PROPERTIES
+    INTERFACE_INCLUDE_DIRECTORIES "${LUA_INCLUDE_DIR}"
+    INTERFACE_LINK_LIBRARIES "${LUA_LIBRARIES}")
+endif()
 
+message(STATUS "lua: using ${LUA_VERSION_STRING} from vcpkg")
