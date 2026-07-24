@@ -20,6 +20,7 @@ endif()
 
 option(GFLOW_BUILD_MOCK_SERVER "Build the synthetic EchoService mock server" ON)
 option(GFLOW_BUILD_TESTS "Build the gflow test target" ON)
+option(GFLOW_BUILD_UPDATER "Build the updater for the main app" ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -66,6 +67,10 @@ target_compile_definitions(gflow PRIVATE
 
 gflow_set_warnings(gflow)
 gflow_enable_clang_tidy(gflow)
+
+if(GFLOW_BUILD_UPDATER)
+    add_subdirectory(src/gflow-updater)
+endif()
 
 if(GFLOW_BUILD_TESTS)    
   include(deps/gtest)

@@ -24,15 +24,6 @@ add_custom_target(format-check
 )
 
 function(gflow_enable_clang_tidy target)
-  if(NOT GFLOW_ENABLE_CLANG_TIDY)
-    return()
-  endif()
-
-  if(NOT GFLOW_CLANG_TIDY)
-    message(WARNING "GFLOW_ENABLE_CLANG_TIDY=ON but clang-tidy not found; skipping for ${target}")
-    return()
-  endif()
-
   set_target_properties(${target}
       PROPERTIES
       CXX_CLANG_TIDY "${GFLOW_CLANG_TIDY};--quiet"

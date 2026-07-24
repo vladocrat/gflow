@@ -1,10 +1,12 @@
 // Copyright (C) 2026 Vladislav Milovanov
 // SPDX-License-Identifier: AGPL-3.0-only
 
-#include "Application.hpp"
+#include <CLI/CLI.hpp>
+
+#include "CliParser.hpp"
 
 int main(int argc, char** argv)
 {
-    gflow::Application app;
-    return app.run(argc, argv);
+    CliParser parser;
+    return parser.parse(argc, argv);
 }

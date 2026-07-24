@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Vladislav Milovanov
+// SPDX-License-Identifier: AGPL-3.0-only
+
 #pragma once
 
 #include <utils-cpp/pimpl.h>

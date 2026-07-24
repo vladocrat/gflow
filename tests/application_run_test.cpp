@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Vladislav Milovanov
+// SPDX-License-Identifier: AGPL-3.0-only
+
 #include <filesystem>
 #include <initializer_list>
 #include <string>
