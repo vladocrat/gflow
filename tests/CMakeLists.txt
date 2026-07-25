@@ -9,6 +9,7 @@ add_executable(gflow_tests
     bridge_test.cpp
     cli_parser_test.cpp
     application_run_test.cpp
+    update_storage_service.cpp
 )
 
 target_include_directories(gflow_tests

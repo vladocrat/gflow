@@ -7,12 +7,6 @@
 
 #include <utils-cpp/pimpl.h>
 
-struct Update
-{
-    std::filesystem::path from;
-    std::filesystem::path to;
-};
-
 class UpdateStorageService;
 
 class Updater
@@ -27,8 +21,8 @@ public:
     Updater& operator=(const Updater&) = delete;
     Updater& operator=(Updater&&) = delete;
 
-    bool execute(const Update&) const noexcept;
-    bool rollback(const Update&) const noexcept;
+    bool execute(const std::filesystem::path& applicationDir) const noexcept;
+    bool rollback(const std::filesystem::path& applicationDir) const noexcept;
 
 private:
     DECLARE_PIMPL

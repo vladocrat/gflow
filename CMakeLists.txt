@@ -69,6 +69,7 @@ gflow_set_warnings(gflow)
 gflow_enable_clang_tidy(gflow)
 
 if(GFLOW_BUILD_UPDATER)
+    add_subdirectory(src/gflow-updater-sdk)
     add_subdirectory(src/gflow-updater)
 endif()
 

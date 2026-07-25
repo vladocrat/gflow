@@ -25,15 +25,15 @@ Updater::Updater(const UpdateStorageService& repository) noexcept
 
 Updater::~Updater() noexcept = default;
 
-bool Updater::execute(const Update& update) const noexcept
+bool Updater::execute(const std::filesystem::path& applicationDir) const noexcept
 {
     try {
-        if (const auto err = impl().repository.backupCurrentVersion(update.to)) {
+        if (const auto err = impl().repository.backupCurrentVersion(applicationDir)) {
             spdlog::error("Failed to backup version: {}", err.message());
             return false;
         }
 
-        if (const auto err = impl().repository.installUpdate(update.to)) {
+        if (const auto err = impl().repository.installUpdate(applicationDir)) {
             spdlog::error("Failed to install update: {}", err.message());
             return false;
         }
@@ -48,10 +48,10 @@ bool Updater::execute(const Update& update) const noexcept
     return true;
 }
 
-bool Updater::rollback(const Update& update) const noexcept
+bool Updater::rollback(const std::filesystem::path& applicationDir) const noexcept
 {
     try {
-        if (const auto err = impl().repository.restoreBackup(update.to)) {
+        if (const auto err = impl().repository.restoreBackup(applicationDir)) {
             spdlog::error("Failed to rollback version: {}", err.message());
             return false;
         }
