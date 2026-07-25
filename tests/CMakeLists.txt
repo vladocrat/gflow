@@ -9,7 +9,6 @@ add_executable(gflow_tests
     bridge_test.cpp
     cli_parser_test.cpp
     application_run_test.cpp
-    update_storage_service.cpp
 )
 
 target_include_directories(gflow_tests
@@ -39,6 +38,13 @@ target_compile_definitions(gflow_tests PRIVATE
     GFLOW_PROTO_DIR="${PROTO_DIR}"
     GFLOW_LUA_DIR="${LUA_DIR}"
 )
+
+if(GFLOW_BUILD_UPDATER)
+  target_sources(gflow_tests PRIVATE
+      update_storage_service.cpp
+  )
+  target_link_libraries(gflow_tests PRIVATE gflow-updater-sdk)
+endif()
 
 if(GFLOW_BUILD_MOCK_SERVER)
   add_subdirectory(echo-server)
