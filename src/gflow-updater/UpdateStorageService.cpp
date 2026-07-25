@@ -1,13 +1,13 @@
 // Copyright (C) 2026 Vladislav Milovanov
 // SPDX-License-Identifier: AGPL-3.0-only
 
-#include "StorageRepository.hpp"
+#include "UpdateStorageService.hpp"
 
 #include <spdlog/spdlog.h>
 
 #include "Storage.hpp"
 
-struct StorageRepository::impl_t
+struct UpdateStorageService::impl_t
 {
     std::unique_ptr<Storage> storage;
 
@@ -24,14 +24,14 @@ struct StorageRepository::impl_t
     impl_t& operator=(impl_t&&) = delete;
 };
 
-StorageRepository::StorageRepository(std::unique_ptr<Storage>&& storage)
+UpdateStorageService::UpdateStorageService(std::unique_ptr<Storage>&& storage)
 {
     createImpl(std::move(storage));
 }
 
-StorageRepository::~StorageRepository() = default;
+UpdateStorageService::~UpdateStorageService() = default;
 
-std::error_code StorageRepository::backupCurrentVersion(const std::filesystem::path& applicationDir) const
+std::error_code UpdateStorageService::backupCurrentVersion(const std::filesystem::path& applicationDir) const
 {
     const auto rollbackDir = impl().storage->acquireRollbackDir();
 
@@ -51,7 +51,7 @@ std::error_code StorageRepository::backupCurrentVersion(const std::filesystem::p
     return {};
 }
 
-std::error_code StorageRepository::restoreBackup(const std::filesystem::path& applicationDir) const
+std::error_code UpdateStorageService::restoreBackup(const std::filesystem::path& applicationDir) const
 {
     const auto rollbackDir = impl().storage->acquireRollbackDir();
 
@@ -78,7 +78,7 @@ std::error_code StorageRepository::restoreBackup(const std::filesystem::path& ap
     return {};
 }
 
-std::error_code StorageRepository::installUpdate(const std::filesystem::path& applicationDir) const
+std::error_code UpdateStorageService::installUpdate(const std::filesystem::path& applicationDir) const
 {
     const auto patchDir = impl().storage->acquirePatchDir();
 
@@ -98,7 +98,7 @@ std::error_code StorageRepository::installUpdate(const std::filesystem::path& ap
     return {};
 }
 
-std::error_code StorageRepository::clearStorage() const
+std::error_code UpdateStorageService::clearStorage() const
 {
     std::error_code errCode;
 

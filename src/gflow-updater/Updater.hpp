@@ -13,12 +13,12 @@ struct Update
     std::filesystem::path to;
 };
 
-class StorageRepository;
+class UpdateStorageService;
 
 class Updater
 {
 public:
-    Updater(const StorageRepository& repository) noexcept;
+    Updater(const UpdateStorageService& repository) noexcept;
     virtual ~Updater() noexcept;
 
     Updater() = delete;

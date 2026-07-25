@@ -5,20 +5,20 @@
 
 #include <spdlog/spdlog.h>
 
-#include "StorageRepository.hpp"
+#include "UpdateStorageService.hpp"
 
 struct Updater::impl_t
 {
-    const StorageRepository& repository;
+    const UpdateStorageService& repository;
 
-    impl_t(const StorageRepository& repo)
+    impl_t(const UpdateStorageService& repo)
         : repository { repo }
     {
 
     }
 };
 
-Updater::Updater(const StorageRepository& repository) noexcept
+Updater::Updater(const UpdateStorageService& repository) noexcept
 {
     createImpl(repository);
 }

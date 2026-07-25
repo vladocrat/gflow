@@ -23,6 +23,7 @@ Checks: >
   -misc-no-recursion,
   -clang-diagnostic-unused-command-line-argument,
   -portability-avoid-pragma-once
+  -cppcoreguidelines-avoid-const-or-ref-data-members
 
 HeaderFilterRegex: 'src/.*'
 

@@ -13,8 +13,8 @@ add_executable(gflow-updater
     Storage.cpp
     LocalStorage.hpp
     LocalStorage.cpp
-    StorageRepository.hpp
-    StorageRepository.cpp
+    UpdateStorageService.hpp
+    UpdateStorageService.cpp
 )
 
 target_link_libraries(gflow-updater

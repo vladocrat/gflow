@@ -9,17 +9,17 @@
 
 class Storage;
 
-class StorageRepository final
+class UpdateStorageService final
 {
 public:
-    explicit StorageRepository(std::unique_ptr<Storage>&&);
-    ~StorageRepository();
+    explicit UpdateStorageService(std::unique_ptr<Storage>&&);
+    ~UpdateStorageService();
 
-    StorageRepository() = delete;
-    StorageRepository(const StorageRepository&) = delete;
-    StorageRepository(StorageRepository&&) = delete;
-    StorageRepository& operator=(const StorageRepository&) = delete;
-    StorageRepository& operator=(StorageRepository&&) = delete;
+    UpdateStorageService() = delete;
+    UpdateStorageService(const UpdateStorageService&) = delete;
+    UpdateStorageService(UpdateStorageService&&) = delete;
+    UpdateStorageService& operator=(const UpdateStorageService&) = delete;
+    UpdateStorageService& operator=(UpdateStorageService&&) = delete;
 
     std::error_code backupCurrentVersion(const std::filesystem::path& applicationDir) const;
     std::error_code restoreBackup(const std::filesystem::path& applicationDir) const;
