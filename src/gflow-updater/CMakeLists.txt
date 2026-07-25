@@ -9,6 +9,12 @@ add_executable(gflow-updater
     CliParser.cpp
     PathProvider.hpp
     PathProvider.cpp
+    Storage.hpp
+    Storage.cpp
+    LocalStorage.hpp
+    LocalStorage.cpp
+    StorageRepository.hpp
+    StorageRepository.cpp
 )
 
 target_link_libraries(gflow-updater

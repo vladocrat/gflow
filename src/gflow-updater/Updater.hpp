@@ -5,18 +5,31 @@
 
 #include <filesystem>
 
+#include <utils-cpp/pimpl.h>
+
 struct Update
 {
     std::filesystem::path from;
     std::filesystem::path to;
 };
 
+class StorageRepository;
+
 class Updater
 {
 public:
-    static bool execute(const Update&) noexcept;
-    static bool rollback(const Update&) noexcept;
+    Updater(const StorageRepository& repository) noexcept;
+    virtual ~Updater() noexcept;
+
+    Updater() = delete;
+    Updater(const Updater&) = delete;
+    Updater(Updater&&) = delete;
+    Updater& operator=(const Updater&) = delete;
+    Updater& operator=(Updater&&) = delete;
+
+    bool execute(const Update&) const noexcept;
+    bool rollback(const Update&) const noexcept;
 
 private:
-    static std::error_code cleanTemp() noexcept;
+    DECLARE_PIMPL
 };
