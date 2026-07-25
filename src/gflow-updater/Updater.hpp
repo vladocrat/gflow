@@ -5,9 +5,18 @@
 
 #include <filesystem>
 
+struct Update
+{
+    std::filesystem::path from;
+    std::filesystem::path to;
+};
+
 class Updater
 {
 public:
-    static bool update(const std::filesystem::path& from, const std::filesystem::path& to);
-};
+    static bool execute(const Update&) noexcept;
+    static bool rollback(const Update&) noexcept;
 
+private:
+    static std::error_code cleanTemp() noexcept;
+};

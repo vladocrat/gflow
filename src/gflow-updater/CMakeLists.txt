@@ -7,6 +7,8 @@ add_executable(gflow-updater
     Updater.cpp
     CliParser.hpp
     CliParser.cpp
+    PathProvider.hpp
+    PathProvider.cpp
 )
 
 target_link_libraries(gflow-updater
