@@ -13,7 +13,7 @@ class UpdateStorageService final
 {
 public:
     explicit UpdateStorageService(std::unique_ptr<Storage>&&);
-    ~UpdateStorageService();
+    ~UpdateStorageService() noexcept;
 
     UpdateStorageService() = delete;
     UpdateStorageService(const UpdateStorageService&) = delete;
@@ -21,10 +21,10 @@ public:
     UpdateStorageService& operator=(const UpdateStorageService&) = delete;
     UpdateStorageService& operator=(UpdateStorageService&&) = delete;
 
-    std::error_code backupCurrentVersion(const std::filesystem::path& applicationDir) const;
-    std::error_code restoreBackup(const std::filesystem::path& applicationDir) const;
-    std::error_code installUpdate(const std::filesystem::path& applicationDir) const;
-    std::error_code clearStorage() const;
+    std::error_code backupCurrentVersion(const std::filesystem::path& applicationDir) const noexcept;
+    std::error_code restoreBackup(const std::filesystem::path& applicationDir) const noexcept;
+    std::error_code installUpdate(const std::filesystem::path& applicationDir) const noexcept;
+    std::error_code clearStorage() const noexcept;
 
 private:
     DECLARE_PIMPL

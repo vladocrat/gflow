@@ -1,6 +1,4 @@
 add_library(gflow-updater-sdk STATIC
-    Updater.hpp
-    Updater.cpp
     CliParser.hpp
     CliParser.cpp
     PathProvider.hpp

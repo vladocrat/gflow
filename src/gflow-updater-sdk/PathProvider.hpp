@@ -9,13 +9,13 @@
 namespace paths
 {
 
-[[nodiscard]] std::expected<std::filesystem::path, std::error_code> getLocalAppData();
-[[nodiscard]] std::expected<std::filesystem::path, std::error_code> getApplicationDataRootDir();
+[[nodiscard]] std::expected<std::filesystem::path, std::error_code> getLocalAppData() noexcept;
+[[nodiscard]] std::expected<std::filesystem::path, std::error_code> getApplicationDataRootDir() noexcept;
 
-[[nodiscard]] std::expected<std::filesystem::path, std::error_code> createTempPatchDir();
-[[nodiscard]] std::expected<std::filesystem::path, std::error_code> getTempPatchDir();
+[[nodiscard]] std::expected<std::filesystem::path, std::error_code> createTempPatchDir() noexcept;
+[[nodiscard]] std::expected<std::filesystem::path, std::error_code> getTempPatchDir() noexcept;
 
-[[nodiscard]] std::expected<std::filesystem::path, std::error_code> createTempRollbackDir();
-[[nodiscard]] std::expected<std::filesystem::path, std::error_code> getTempRollbackDir();
+[[nodiscard]] std::expected<std::filesystem::path, std::error_code> createTempRollbackDir() noexcept;
+[[nodiscard]] std::expected<std::filesystem::path, std::error_code> getTempRollbackDir() noexcept;
 
 }

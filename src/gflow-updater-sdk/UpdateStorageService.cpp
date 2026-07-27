@@ -29,9 +29,9 @@ UpdateStorageService::UpdateStorageService(std::unique_ptr<Storage>&& storage)
     createImpl(std::move(storage));
 }
 
-UpdateStorageService::~UpdateStorageService() = default;
+UpdateStorageService::~UpdateStorageService() noexcept = default;
 
-std::error_code UpdateStorageService::backupCurrentVersion(const std::filesystem::path& applicationDir) const
+std::error_code UpdateStorageService::backupCurrentVersion(const std::filesystem::path& applicationDir) const noexcept
 {
     const auto rollbackDir = impl().storage->acquireRollbackDir();
 
@@ -51,7 +51,7 @@ std::error_code UpdateStorageService::backupCurrentVersion(const std::filesystem
     return {};
 }
 
-std::error_code UpdateStorageService::restoreBackup(const std::filesystem::path& applicationDir) const
+std::error_code UpdateStorageService::restoreBackup(const std::filesystem::path& applicationDir) const noexcept
 {
     const auto rollbackDir = impl().storage->acquireRollbackDir();
 
@@ -78,7 +78,7 @@ std::error_code UpdateStorageService::restoreBackup(const std::filesystem::path&
     return {};
 }
 
-std::error_code UpdateStorageService::installUpdate(const std::filesystem::path& applicationDir) const
+std::error_code UpdateStorageService::installUpdate(const std::filesystem::path& applicationDir) const noexcept
 {
     const auto patchDir = impl().storage->acquirePatchDir();
 
@@ -98,7 +98,7 @@ std::error_code UpdateStorageService::installUpdate(const std::filesystem::path&
     return {};
 }
 
-std::error_code UpdateStorageService::clearStorage() const
+std::error_code UpdateStorageService::clearStorage() const noexcept
 {
     std::error_code errCode;
 

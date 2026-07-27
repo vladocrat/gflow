@@ -3,6 +3,8 @@
 
 #include "PathProvider.hpp"
 
+#include <spdlog/spdlog.h>
+
 #ifdef WIN32
 #include <shlobj.h>
 #include <Windows.h>
@@ -15,7 +17,7 @@ constexpr auto ORG_NAME = "gflow";
 constexpr auto PATCH_DIR_NAME = "Update";
 constexpr auto ROLLBACK_DIR_NAME = "Rollback";
 
-std::expected<std::filesystem::path, std::error_code> getDir(std::string_view dirName)
+std::expected<std::filesystem::path, std::error_code> getDir(std::string_view dirName) noexcept
 {
     const auto root = paths::getApplicationDataRootDir();
 
@@ -39,7 +41,7 @@ std::expected<std::filesystem::path, std::error_code> getDir(std::string_view di
 
 }
 
-std::expected<std::filesystem::path, std::error_code> createIfNotExists(std::string_view dirName)
+std::expected<std::filesystem::path, std::error_code> createIfNotExists(std::string_view dirName) noexcept
 {
     const auto root = paths::getApplicationDataRootDir();
 
@@ -64,20 +66,29 @@ std::expected<std::filesystem::path, std::error_code> createIfNotExists(std::str
 namespace paths
 {
 
-std::expected<std::filesystem::path, std::error_code> getLocalAppData()
+std::expected<std::filesystem::path, std::error_code> getLocalAppData() noexcept
 {
 #ifdef WIN32
-    PWSTR path {nullptr};
+    try {
+        PWSTR path {nullptr};
 
-    const auto hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &path);
+        const auto hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &path);
 
-    if (SUCCEEDED(hr)) {
-        std::filesystem::path result(path);
-        CoTaskMemFree(path);
-        return result;
+        if (SUCCEEDED(hr)) {
+            std::filesystem::path result(path);
+            CoTaskMemFree(path);
+            return result;
+        }
+
+        return std::unexpected(std::error_code{hr, std::system_category()});
+    } catch (const std::exception& e) {
+        spdlog::error("Failed to get appdata: {}", e.what());
+        return std::unexpected(std::make_error_code(std::errc::no_such_file_or_directory));
+    } catch (...) {
+        spdlog::error("Unkown expection while getting appdata");
+        return std::unexpected(std::make_error_code(std::errc::no_such_file_or_directory));
     }
 
-    return std::unexpected(std::error_code{hr, std::system_category()});
 #endif
 
 #ifdef __linux__
@@ -89,7 +100,7 @@ std::expected<std::filesystem::path, std::error_code> getLocalAppData()
 #endif
 }
 
-std::expected<std::filesystem::path, std::error_code> getApplicationDataRootDir()
+std::expected<std::filesystem::path, std::error_code> getApplicationDataRootDir() noexcept
 {
     const auto localAppData = getLocalAppData();
 
@@ -109,22 +120,22 @@ std::expected<std::filesystem::path, std::error_code> getApplicationDataRootDir(
     return appPath;
 }
 
-std::expected<std::filesystem::path, std::error_code> createTempPatchDir()
+std::expected<std::filesystem::path, std::error_code> createTempPatchDir() noexcept
 {
     return createIfNotExists(PATCH_DIR_NAME);
 }
 
-std::expected<std::filesystem::path, std::error_code> getTempPatchDir()
+std::expected<std::filesystem::path, std::error_code> getTempPatchDir() noexcept
 {
     return getDir(PATCH_DIR_NAME);
 }
 
-std::expected<std::filesystem::path, std::error_code> createTempRollbackDir()
+std::expected<std::filesystem::path, std::error_code> createTempRollbackDir() noexcept
 {
     return createIfNotExists(ROLLBACK_DIR_NAME);
 }
 
-std::expected<std::filesystem::path, std::error_code> getTempRollbackDir()
+std::expected<std::filesystem::path, std::error_code> getTempRollbackDir() noexcept
 {
     return getDir(ROLLBACK_DIR_NAME);
 }
